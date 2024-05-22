@@ -17,7 +17,8 @@ namespace KioskFinalProject {
 
             //The program should keep track of how many of each denomination of bill and coin the kiosk currently has.Use a user defined datatype to do this.
             CurrencyDenomination currency = new CurrencyDenomination();
-            currency.Deposit(1, 2, 5, 10, 20, 4, 50, 200, 20, 20, 40, 5, 10, 10);
+            // currency.Deposit(1, 2, 5, 10, 20, 4, 50, 200, 20, 20, 40, 5, 10, 10);
+            currency.Deposit(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1);
             //currency.DisplayCurrency();
 
             // The program should allow any number of items costs to be input until no cost has been supplied.
@@ -27,7 +28,7 @@ namespace KioskFinalProject {
                 double cost = PrompTryDouble($"Item {itemNumber}: ");
                     if (cost == 0) { 
                         continueAdding = true;
-                    } else {
+                    } else if (cost > 0) {
                         cart.AddItemCost(cost);
                         itemNumber++;
                     }//end if
@@ -39,24 +40,39 @@ namespace KioskFinalProject {
             // The user should be able to insert any denomination of bills or coins until their total amount exceeds the cost of all the items. 
             while (cart.GetTotalInserted() < cart.GetTotalCost()) {
                 double money = PrompTryDouble($"\nPayment {paymentNumber}: $");
-                if (money == 100 || money == 50 || money == 20 || money == 10 || money == 5 || money == 2 || money <= 1) { 
+                if (money == 100 || money == 50 || money == 20 || money == 10 || money == 5 || money == 2 || (money <= 1 && money > 0)) {
                     cart.AddInsertedAmount(money);
-                    currency.AddDepositedAmount((decimal) money);
                     paymentNumber++;
-                    double change = cart.GetTotalInserted() - cart.GetTotalCost();
-                        if (change > 0) {//then 
-                        currency.DispenseChange((decimal)change);
-                        currency.SubDepositedAmount((decimal)(change));
-                            Console.WriteLine($"Change:{change:C} ");
+                    double remaining = cart.GetTotalInserted() - cart.GetTotalCost();
+                    if (remaining < 0) {
+                        Console.WriteLine($"Remaining Amount:{remaining:C} ");
+                    } else {
+                        //Console.WriteLine("Insufficient funds. Please insert correct currency.");
+                        double change = cart.GetTotalInserted() - cart.GetTotalCost();
+                        Console.WriteLine($"Change:{change:C} ");
+                        if (currency.TotalAmount() >= change) {//then
+                            currency.DispenseChange((decimal)change);
+                            currency.SubDepositedAmount((decimal)(change));
+                            Console.WriteLine($"Change:{change:C} \n----------------------------------------------");
                         } else {
-                            double remaining = cart.GetTotalInserted() - cart.GetTotalCost();
-                            Console.WriteLine($"Remaining Amount:{remaining:C} ");
-                        }//end if
+                            Console.WriteLine("\nInsufficient funds in Kiosk.\nPlease provide another form of payment");
+                            cart.RefundInsertedAmount((decimal)cart.GetTotalInserted());
+                            cart.Clear();
+                        }//end nested if
+
+                    }//end if
+
                 }else {
-                    Console.WriteLine("Invalid Amount: Please insert correct currency");
+                    Console.WriteLine("\nInvalid Amount: Please insert correct currency\n");
                 }//end if
             }//end while loop
+            Console.WriteLine();
             currency.DisplayCurrency();
+
+
+                            
+
+
 
             //The kiosk should calculate how much change should be dispensed and dispense the change. (Research and use a greedy algorithm to dispense the change)
 
@@ -67,6 +83,7 @@ namespace KioskFinalProject {
 
 
         #region Money Request
+
         static string[] MoneyRequest(string account_number, decimal amount) {
             Random rnd = new Random();
             //50% CHANCE TRANSACTION PASSES OR FAILS
@@ -88,6 +105,7 @@ namespace KioskFinalProject {
         #endregion
 
         #region PROMPT FUNCTIONS
+
         static double PrompTryDouble(string dataRequest) {
             //Variable
             double userInput = 0;
