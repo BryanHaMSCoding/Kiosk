@@ -1,0 +1,15 @@
+C:\Users\12283\Desktop\Bryan\Kiosk\KioskFinalProject\obj\Debug\net8.0\KioskFinalProject.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\12283\Desktop\Bryan\Kiosk\KioskFinalProject\obj\Debug\net8.0\KioskFinalProject.AssemblyInfoInputs.cache
+C:\Users\12283\Desktop\Bryan\Kiosk\KioskFinalProject\obj\Debug\net8.0\KioskFinalProject.AssemblyInfo.cs
+C:\Users\12283\Desktop\Bryan\Kiosk\KioskFinalProject\obj\Debug\net8.0\KioskFinalProject.csproj.CoreCompileInputs.cache
+C:\Users\12283\Desktop\Bryan\Kiosk\KioskFinalProject\obj\Debug\net8.0\KioskFinalProject.sourcelink.json
+C:\Users\12283\Desktop\Bryan\Kiosk\KioskFinalProject\bin\Debug\net8.0\KioskFinalProject.exe
+C:\Users\12283\Desktop\Bryan\Kiosk\KioskFinalProject\bin\Debug\net8.0\KioskFinalProject.deps.json
+C:\Users\12283\Desktop\Bryan\Kiosk\KioskFinalProject\bin\Debug\net8.0\KioskFinalProject.runtimeconfig.json
+C:\Users\12283\Desktop\Bryan\Kiosk\KioskFinalProject\bin\Debug\net8.0\KioskFinalProject.dll
+C:\Users\12283\Desktop\Bryan\Kiosk\KioskFinalProject\bin\Debug\net8.0\KioskFinalProject.pdb
+C:\Users\12283\Desktop\Bryan\Kiosk\KioskFinalProject\obj\Debug\net8.0\KioskFinalProject.dll
+C:\Users\12283\Desktop\Bryan\Kiosk\KioskFinalProject\obj\Debug\net8.0\refint\KioskFinalProject.dll
+C:\Users\12283\Desktop\Bryan\Kiosk\KioskFinalProject\obj\Debug\net8.0\KioskFinalProject.pdb
+C:\Users\12283\Desktop\Bryan\Kiosk\KioskFinalProject\obj\Debug\net8.0\KioskFinalProject.genruntimeconfig.cache
+C:\Users\12283\Desktop\Bryan\Kiosk\KioskFinalProject\obj\Debug\net8.0\ref\KioskFinalProject.dll
