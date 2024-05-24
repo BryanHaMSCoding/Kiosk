@@ -9,77 +9,97 @@ namespace KioskFinalProject {
     internal class Program {
         static void Main(string[] args) {
             #region Variables
-            int itemNumber = 1;
-            int paymentNumber = 1;
-            bool continueAdding = false;
-
             #endregion
-
             //The program should keep track of how many of each denomination of bill and coin the kiosk currently has.Use a user defined datatype to do this.
-            CurrencyDenomination currency = new CurrencyDenomination();
-            // currency.Deposit(1, 2, 5, 10, 20, 4, 50, 200, 20, 20, 40, 5, 10, 10);
-            currency.Deposit(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1);
-            //currency.DisplayCurrency();
-
-            // The program should allow any number of items costs to be input until no cost has been supplied.
-            ShoppingCart cart = new ShoppingCart(currency);
-            Console.WriteLine("Enter the cost of the item (or type 0 to finish adding items): ");
-            while (!continueAdding) {
-                double cost = PrompTryDouble($"Item {itemNumber}: ");
-                    if (cost == 0) { 
-                        continueAdding = true;
-                    } else if (cost > 0) {
-                        cart.AddItemCost(cost);
-                        itemNumber++;
-                    }//end if
-            }//end while loop
-
-            Console.WriteLine("\nTotal: $" + Math.Round(cart.GetTotalCost(), 2));
-            
-            // Once all items have been input the kiosk should display a total and ask the user to insert money.
-            // The user should be able to insert any denomination of bills or coins until their total amount exceeds the cost of all the items. 
-            while (cart.GetTotalInserted() < cart.GetTotalCost()) {
-                double money = PrompTryDouble($"\nPayment {paymentNumber}: $");
-                if (money == 100 || money == 50 || money == 20 || money == 10 || money == 5 || money == 2 || (money <= 1 && money > 0)) {
-                    cart.AddInsertedAmount(money);
-                    paymentNumber++;
-                    double remaining = cart.GetTotalInserted() - cart.GetTotalCost();
-                    if (remaining < 0) {
-                        Console.WriteLine($"Remaining Amount:{remaining:C} ");
-                    } else {
-                        //Console.WriteLine("Insufficient funds. Please insert correct currency.");
-                        double change = cart.GetTotalInserted() - cart.GetTotalCost();
-                        Console.WriteLine($"Change:{change:C} ");
-                        if (currency.TotalAmount() >= change) {//then
-                            currency.DispenseChange((decimal)change);
-                            currency.SubDepositedAmount((decimal)(change));
-                            Console.WriteLine($"Change:{change:C} \n----------------------------------------------");
-                        } else {
-                            Console.WriteLine("\nInsufficient funds in Kiosk.\nPlease provide another form of payment");
-                            cart.RefundInsertedAmount((decimal)cart.GetTotalInserted());
-                            cart.Clear();
-                        }//end nested if
-
-                    }//end if
-
-                }else {
-                    Console.WriteLine("\nInvalid Amount: Please insert correct currency\n");
-                }//end if
-            }//end while loop
-            Console.WriteLine();
-            currency.DisplayCurrency();
-
-
-                            
-
-
-
+            //currency.Deposit(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1);
+            //The program should allow any number of items costs to be input until no cost has been supplied.
+            //Once all items have been input the kiosk should display a total and ask the user to insert money.
+            //The user should be able to insert any denomination of bills or coins until their total amount exceeds the cost of all the items. 
             //The kiosk should calculate how much change should be dispensed and dispense the change. (Research and use a greedy algorithm to dispense the change)
-
             //If the kiosk does not have enough physical money to supply the change then the transaction will be cancelled, and the user should be offered another way to make payments(you do not have to develop other methods of payment)
+            CurrencyDenomination currency = new CurrencyDenomination();
+            ShoppingCart cart = new ShoppingCart();
+            bool newTransaction = true;
+
+            currency.Deposit(1, 2, 5, 10, 20, 4, 0, 200, 20, 20, 40, 5, 10, 10);
             
-            
+            while (newTransaction) {
+                Console.Clear();
+                cart.Clear();
+                int paymentNumber = 1;
+                int itemNumber = 1;
+                bool stopAdding = false;
+
+                currency.DisplayCurrency();
+
+                Console.WriteLine("Enter the cost of the item (or type 0 to finish adding items): ");
+                while (!stopAdding) {
+                    double cost = PrompTryDouble($"Item {itemNumber}: ");
+                        if (cost == 0) { 
+                            stopAdding = true;
+                        } else if (cost > 0) {
+                            cart.AddItemCost(cost);
+                            itemNumber++;
+                        }//end if
+                }//end while loop
+
+                Console.WriteLine("\nTotal: $" + Math.Round(cart.GetTotalCost(), 2));
+
+                while (cart.GetTotalInserted() < cart.GetTotalCost()) {
+                    double money = PrompTryDouble($"\nPayment {paymentNumber}: $");
+                    if (money == 100 || money == 50 || money == 20 || money == 10 || money == 5 || money == 2 || money == 1 || money == 0.5 || money == 0.25 || money == 0.1 || money == 0.05 || money == 0.01) {
+                        cart.AddInsertedAmount(money);
+                        double totalInserted = cart.GetTotalInserted();
+                        double totalAmount = currency.TotalAmount();
+                        double totalCost = cart.GetTotalCost();
+                        paymentNumber++;
+                        double remaining = totalCost - totalInserted;
+
+                        if (remaining > 0) {
+                            Console.WriteLine($"Remaining Amount:{remaining:C} ");
+                        } else {
+                            double change = totalInserted - totalCost;
+                            if (change > 0) {
+                                Console.WriteLine($"Change:{change:C}\n");
+                                if (totalAmount >= change && currency.DispenseChange((decimal)change)) {//then
+                                    currency.SubDepositedAmount((decimal)(change));
+                                    currency.DisplayCurrency();
+                                } else {
+                                    Console.WriteLine("\nInsufficient funds in Kiosk.\nPlease provide another form of payment.");
+                                    cart.RefundInsertedAmount((decimal)cart.GetTotalInserted());
+                                    cart.Clear();
+                                    break;
+                                }//end if
+                            } else {
+                                Console.WriteLine();
+                            }//end if
+                        }//end if
+                    }else {
+                        Console.WriteLine("\nInvalid Amount: Please insert correct currency\n");
+                    }//end if
+
+                }//end while loop
+                    newTransaction = NewTransaction();
+            }//end while loop
+                Console.WriteLine("Thank You for shopping!");
+
         }//end main
+
+        static bool NewTransaction() {
+            
+            while (true) {
+                Console.WriteLine();
+                string newTransaction = Prompt("Do you want to start a new transaction? (---Y---/---N---): ");
+                    if (newTransaction.ToLower() == "y") {
+                        return true;
+                    } else if (newTransaction.ToLower() == "n") {
+                        return false;
+                    } else {
+                    Console.WriteLine("Invalid response! Please type 'Y' or 'N'\n");
+                    }//end if
+
+            }//end while loop
+        }//end function
 
 
         #region Money Request

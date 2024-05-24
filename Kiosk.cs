@@ -104,13 +104,51 @@ public class CurrencyDenomination {
     //increment and decrement cash
 
        
-            
-        public void AddDepositedAmount(decimal amount) {
-            _depositedAmount += amount;
-        }//end method
+        
 
-        public void SubDepositedAmount(decimal amount) { 
-            _depositedAmount -= amount;
+        public void SubDepositedAmount(decimal amount) {
+        while (amount > 0) {
+            if (amount >= 100 && _hundredDollar > 0) {
+                amount -= 100;
+                _hundredDollar--;
+            } else if (amount >= 50 && _fiftyDollar > 0) {
+                amount -= 50;
+                _fiftyDollar--;
+            } else if (amount >= 20 && _twentyDollar > 0) {
+                amount -= 20;
+                _twentyDollar--;
+            } else if (amount >= 10 && _tenDollar > 0) {
+                amount -= 10;
+                _tenDollar--;
+            } else if (amount >= 5 && _fiveDollar > 0) {
+                amount -= 5;
+                _fiveDollar--;
+            } else if (amount >= 2 && _twoDollar > 0) {
+                amount -= 2;
+                _twoDollar--;
+            } else if (amount >= 1 && _oneDollar > 0) {
+                amount -= 1;
+                _oneDollar--;
+            } else if (amount >= 1 && _dollarCoin > 0 && _oneDollar == 0) {
+                amount -= 1;
+                _dollarCoin--;
+            } else if (amount > 0.5m && _halfDollar > 0) {
+                amount -= 0.5m;
+                _halfDollar--;
+            } else if (amount > 0.25m && _quarter > 0) {
+                amount -= 0.25m;
+                _quarter--;
+            } else if (amount > 0.10m && _dime > 0) {
+                amount -= 0.10m;
+                _dime--;
+            } else if (amount > 0.05m && _nickel > 0) {
+                amount -= 0.05m;
+                _nickel--;
+            } else if (amount >= 0.01m && _penny > 0) {
+                amount -= 0.01m;
+                _penny--;
+            }//end if
+        }//end while
         }//end method
     
         #region Increment
@@ -249,7 +287,6 @@ public class CurrencyDenomination {
                 Console.WriteLine($"Quarters: {Quarter}");
                 Console.WriteLine($"Half Dollars: {HalfDollar}");
                 Console.WriteLine($"Dollar Coins: {DollarCoin}");
-                Console.WriteLine($"Eisenhower Coins: {Eisenhower}");
             }//end display method
 
     #endregion 
@@ -279,9 +316,23 @@ public class CurrencyDenomination {
     #endregion
 
         //Dispense Change
-        public void DispenseChange(decimal change) {
-            Console.WriteLine("Dispense Change: ");
-            
+        public bool DispenseChange(decimal change) {
+ 
+            decimal HundredDollar = _hundredDollar;
+            decimal FiftyDollar = _fiftyDollar;
+            decimal TwentyDollar = _twentyDollar;
+            decimal TenDollar = _tenDollar;
+            decimal FiveDollar = _fiveDollar;
+            decimal TwoDollar = _twoDollar;
+            decimal OneDollar = _oneDollar;
+            decimal DollarCoin = _dollarCoin;
+            decimal HalfDollar = _halfDollar;
+            decimal Quarter = _quarter;
+            decimal Dime = _dime;
+            decimal Nickel = _nickel;
+            decimal Penny = _penny;
+
+        Console.WriteLine("Dispense Change: ");
             while (change > 0) {
             if (change >= 100 && _hundredDollar > 0) {
                 Console.WriteLine("$100 x 1");
@@ -309,7 +360,6 @@ public class CurrencyDenomination {
                 change -= 2;
             } else if (change >= 1 && _oneDollar > 0 ) {
                 Console.WriteLine("$1 x 1");
-                //create nested condition for dollar bill and and then dollar coin
                 _oneDollar--;
                 change -= 1;
             } else if(change >= 1 && _dollarCoin > 0 &&_oneDollar == 0) {
@@ -337,9 +387,26 @@ public class CurrencyDenomination {
                 _penny--;
                 change -= 0.01m;
             }else {
-                break;
+                return false;
             }//end else if
             }//end while
+
+        _hundredDollar = HundredDollar;
+        _fiftyDollar = FiftyDollar;
+        _twentyDollar = TwentyDollar;
+        _tenDollar = TenDollar;
+        _fiveDollar = FiveDollar;
+        _twoDollar = TwoDollar;
+        _oneDollar = OneDollar;
+
+        _dollarCoin = DollarCoin;
+        _halfDollar = HalfDollar;
+        _quarter = Quarter;
+        _dime = Dime;
+        _nickel = Nickel;
+        _penny = Penny;
+
+        return true;
 
         }//end method  
 
@@ -358,11 +425,15 @@ public class ShoppingCart {
         double _totalInserted = 0;
 
         //Constructor
-        public ShoppingCart(CurrencyDenomination currency) {
+        /*
+        public ShoppingCart() {
             _totalCost = 0;
             _totalInserted = 0;
         }//end constructor
 
+
+        */
+        
         //Method
         public void AddItemCost(double itemCost) {
             _totalCost += itemCost;
@@ -370,7 +441,6 @@ public class ShoppingCart {
 
         public void AddInsertedAmount(double amount) {
             _totalInserted += amount;
-                if (_totalInserted == 100 &&  _totalInserted == 50 && _totalInserted == 20 && _totalInserted == 10 && _totalInserted == 5 && _totalInserted == 2 && _totalInserted <=1) { }
         }//end method
         
         //Getter
@@ -392,7 +462,7 @@ public class ShoppingCart {
         public void RefundInsertedAmount(decimal refund) {
             double amount = (double)refund;
             _totalInserted = _totalInserted - amount;
-            Console.WriteLine($"Refunding Amount: {amount}");
+            Console.WriteLine($"\nRefunding Amount: {amount}\n");
         }//end method
 
          
