@@ -413,6 +413,51 @@ public class CurrencyDenomination {
 
     #endregion
 
+    #region Luhn Algorithm
+
+    public static bool IsValidCreditCard(string cardNumber) {
+
+        char[] digits = cardNumber.ToCharArray();
+
+        int sum = 0;
+        bool shouldDouble = false;
+
+        for (int i = digits.Length - 1; i >= 0; i--) {
+            int digit = digits[i] - '0';
+            if (shouldDouble) {
+                digit *= 2;
+                if (digit < 9) {
+                    digit -= 9; 
+                }//end if
+            }//end if
+
+            sum += digit;
+
+            shouldDouble = !shouldDouble;
+        }//end for loop
+
+        return (sum % 10 == 0);
+
+    }//end method
+
+    #endregion
+
+    #region CCValidation
+    static void CreditCardValidation() {
+
+        Console.WriteLine("Enter your credit card number: ");
+        string cardNumber = Console.ReadLine();
+
+        if (IsValidCreditCard(cardNumber)) {
+            Console.WriteLine("The card is valid");
+        } else {
+            Console.WriteLine("The card is NOT valid");
+        }//end if
+
+
+    }//end function
+    #endregion
+
 }//end Currency Class
 
 #endregion

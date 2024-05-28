@@ -9,7 +9,6 @@ namespace KioskFinalProject {
     internal class Program {
         static void Main(string[] args) {
             #region Variables
-            #endregion
             //The program should keep track of how many of each denomination of bill and coin the kiosk currently has.Use a user defined datatype to do this.
             //currency.Deposit(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1);
             //The program should allow any number of items costs to be input until no cost has been supplied.
@@ -17,6 +16,8 @@ namespace KioskFinalProject {
             //The user should be able to insert any denomination of bills or coins until their total amount exceeds the cost of all the items. 
             //The kiosk should calculate how much change should be dispensed and dispense the change. (Research and use a greedy algorithm to dispense the change)
             //If the kiosk does not have enough physical money to supply the change then the transaction will be cancelled, and the user should be offered another way to make payments(you do not have to develop other methods of payment)
+            #endregion
+
             CurrencyDenomination currency = new CurrencyDenomination();
             ShoppingCart cart = new ShoppingCart();
             bool newTransaction = true;
@@ -29,10 +30,11 @@ namespace KioskFinalProject {
                 int paymentNumber = 1;
                 int itemNumber = 1;
                 bool stopAdding = false;
+                string paymentMethod = Prompt("Enter payment method (cash/credit): ").ToLower();
 
-                currency.DisplayCurrency();
+                //currency.DisplayCurrency();
 
-                Console.WriteLine("Enter the cost of the item (or type 0 to finish adding items): ");
+                Console.WriteLine("\nEnter the cost of the item (or type 0 to finish adding items): ");
                 while (!stopAdding) {
                     double cost = PrompTryDouble($"Item {itemNumber}: ");
                         if (cost == 0) { 
@@ -43,49 +45,101 @@ namespace KioskFinalProject {
                         }//end if
                 }//end while loop
 
-                Console.WriteLine("\nTotal: $" + Math.Round(cart.GetTotalCost(), 2));
+                double totalCost = cart.GetTotalCost();
+                Console.WriteLine("\nTotal: $" + Math.Round(totalCost, 2));
 
-                while (cart.GetTotalInserted() < cart.GetTotalCost()) {
-                    double money = PrompTryDouble($"\nPayment {paymentNumber}: $");
-                    if (money == 100 || money == 50 || money == 20 || money == 10 || money == 5 || money == 2 || money == 1 || money == 0.5 || money == 0.25 || money == 0.1 || money == 0.05 || money == 0.01) {
-                        cart.AddInsertedAmount(money);
-                        double totalInserted = cart.GetTotalInserted();
-                        double totalAmount = currency.TotalAmount();
-                        double totalCost = cart.GetTotalCost();
-                        paymentNumber++;
-                        double remaining = totalCost - totalInserted;
+                if (paymentMethod == "cash") {
+                    ProcessCashPayment(totalCost, currency, cart);
+                    if () {
 
-                        if (remaining > 0) {
-                            Console.WriteLine($"Remaining Amount:{remaining:C} ");
-                        } else {
-                            double change = totalInserted - totalCost;
-                            if (change > 0) {
-                                Console.WriteLine($"Change:{change:C}\n");
-                                if (totalAmount >= change && currency.DispenseChange((decimal)change)) {//then
-                                    currency.SubDepositedAmount((decimal)(change));
-                                    currency.DisplayCurrency();
-                                } else {
-                                    Console.WriteLine("\nInsufficient funds in Kiosk.\nPlease provide another form of payment.");
-                                    cart.RefundInsertedAmount((decimal)cart.GetTotalInserted());
-                                    cart.Clear();
-                                    break;
-                                }//end if
-                            } else {
-                                Console.WriteLine();
-                            }//end if
-                        }//end if
-                    }else {
-                        Console.WriteLine("\nInvalid Amount: Please insert correct currency\n");
-                    }//end if
-
-                }//end while loop
-                    newTransaction = NewTransaction();
+                    }
+                }else if (paymentMethod == "credit") {
+                    ProcessCreditCardPayment(totalCost, cart);
+                } else {
+                    Console.WriteLine("Invalid Payment Method!");
+                }//end if
+                newTransaction = NewTransaction();
             }//end while loop
                 Console.WriteLine("Thank You for shopping!");
 
+                /*
+                while (cart.GetTotalInserted() < cart.GetTotalCost()) {
+                    if (paymentMethod == "cash") {
+                        double money = PrompTryDouble($"\nPayment {paymentNumber}: $");
+                        if (money == 100 || money == 50 || money == 20 || money == 10 || money == 5 || money == 2 || money == 1 || money == 0.5 || money == 0.25 || money == 0.1 || money == 0.05 || money == 0.01) {
+                            cart.AddInsertedAmount(money);
+                            double totalInserted = cart.GetTotalInserted();
+                            double totalAmount = currency.TotalAmount();
+                            paymentNumber++;
+                            double remaining = totalCost - totalInserted;
+                            if (remaining > 0) {
+                                Console.WriteLine($"Remaining Amount:{remaining:C} ");
+                            } else {
+                                double change = totalInserted - totalCost;
+                                if (change > 0) {
+                                    Console.WriteLine($"Change:{change:C}\n");
+                                    if (totalAmount >= change && currency.DispenseChange((decimal)change)) {//then
+                                        currency.SubDepositedAmount((decimal)(change));
+                                        currency.DisplayCurrency();
+                                    } else {
+                                        Console.WriteLine("\nInsufficient funds in Kiosk.\nPlease provide another form of payment.");
+                                        cart.RefundInsertedAmount((decimal)cart.GetTotalInserted());
+                                        cart.Clear();
+                                        break;
+                                    }//end if
+                                } else {
+                                    Console.WriteLine();
+                                }//end if
+                            }//end if
+                        }else {
+                            Console.WriteLine("\nInvalid Amount: Please insert correct currency\n");
+                        }//end if
+
+                    }else if (paymentMethod == "credit") {
+                        string cardNumber = Prompt("\nEnter your credit card number: ");
+                            if (IsValidCreditCard(cardNumber)) {
+                                Console.WriteLine("The card is valid");
+                            } else {
+                                Console.WriteLine("The card is NOT valid");
+                            }//end if
+                    }//end if
+
+                }//end while loop
+                        newTransaction = NewTransaction();
+
+                */
         }//end main
 
-        static bool NewTransaction() {
+        #region Luhn Algorithm
+            static bool IsValidCreditCard(string cardNumber) {
+
+                char[] digits = cardNumber.ToCharArray();
+
+                int sum = 0;
+                bool shouldDouble = false;
+
+                for (int i = digits.Length - 1; i >= 0; i--) {
+                    int digit = digits[i] - '0';
+                    if (shouldDouble) {
+                        digit *= 2;
+                        if (digit < 9) {
+                            digit -= 9;
+                        }//end if
+                    }//end if
+
+                    sum += digit;
+
+                    shouldDouble = !shouldDouble;
+                }//end for loop
+
+                return (sum % 10 == 0);
+
+            }//end function
+            #endregion
+
+        #region New Transaction
+
+            static bool NewTransaction() {
             
             while (true) {
                 Console.WriteLine();
@@ -99,8 +153,61 @@ namespace KioskFinalProject {
                     }//end if
 
             }//end while loop
+
+        }//end function
+        #endregion
+
+        #region Cash Payment
+
+        static void ProcessCashPayment(double totalCost, CurrencyDenomination currency, ShoppingCart cart) {
+
+            int paymentNumber = 1;
+
+            while (cart.GetTotalInserted() < totalCost) {
+                double money = PrompTryDouble($"\nPayment {paymentNumber}: $");
+                    if (money == 100 || money == 50 || money == 20 || money == 10 || money == 5 || money == 2 || money == 1 || money == 0.5 || money == 0.25 || money == 0.1 || money == 0.05 || money == 0.01) {
+                        cart.AddInsertedAmount(money);
+                        double totalInserted = cart.GetTotalInserted();
+                        double totalAmount = currency.TotalAmount();
+                        double remaining = totalCost - totalInserted;
+                            if (remaining > 0) {
+                                Console.WriteLine($"Remaining Amount:{remaining:C} ");
+                            } else {
+                                double change = totalInserted - totalCost;
+                                if (change > 0) {
+                                    Console.WriteLine($"Change:{change:C}\n");
+                                    if (totalAmount >= change && currency.DispenseChange((decimal) change)) {//then
+                                        currency.SubDepositedAmount((decimal)(change));
+                                        currency.DisplayCurrency();
+                                    } else {
+                                        Console.WriteLine("\nInsufficient funds in Kiosk.\nPlease provide another form of payment.");
+                                        cart.RefundInsertedAmount((decimal)cart.GetTotalInserted());
+                                        cart.Clear();
+                                        break;
+                                    }//end if
+                                }//end if
+                            }//end if
+                    }else {
+                        Console.WriteLine("\nInvalid Amount: Please insert correct currency\n");
+                    }//end if
+                    paymentNumber++;
+            }//end while
+        }//end function
+        #endregion
+
+        #region Credit Card Payment
+        static void ProcessCreditCardPayment(double totalCost, ShoppingCart cart) {
+
+            string cardNumber = Prompt("\nEnter your credit card number: ");
+                if (IsValidCreditCard(cardNumber)) {
+                    Console.WriteLine("The card is valid");
+                } else {
+                    Console.WriteLine("The card is NOT valid");
+                }//end if
         }//end function
 
+
+        #endregion
 
         #region Money Request
 
