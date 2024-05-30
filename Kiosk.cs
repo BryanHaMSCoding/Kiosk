@@ -25,8 +25,46 @@ public class CurrencyDenomination {
     decimal _depositedAmount = 0;
     #endregion
 
-    #region Currency Constructor
+    #region Credit Card Generator
+    public class CreditCardGenerator {
+        private static Random _random = new Random();
 
+        public static string GenerateCardNumber(string prefix, int length) {
+            // Generate the card number with the given prefix
+            string cardNumber = prefix;
+            while (cardNumber.Length < length - 1) {
+                cardNumber += _random.Next(0, 10).ToString();
+            }
+
+            // Calculate the check digit using the Luhn algorithm
+            int checkDigit = CalculateLuhnCheckDigit(cardNumber);
+            cardNumber += checkDigit.ToString();
+
+            return cardNumber;
+        }
+
+        private static int CalculateLuhnCheckDigit(string cardNumber) {
+            char[] digits = cardNumber.ToCharArray();
+            int sum = 0;
+            bool shouldDouble = true;
+
+            for (int i = digits.Length - 1; i >= 0; i--) {
+                int digit = digits[i] - '0';
+                if (shouldDouble) {
+                    digit *= 2;
+                    if (digit > 9) {
+                        digit -= 9;
+                    }//end if
+                }//end if
+                sum += digit;
+                shouldDouble = !shouldDouble;
+            }//end for loop
+
+            int mod = sum % 10;
+            int checkDigit = (mod == 0) ? 0 : 10 - mod;
+            return checkDigit;
+        }
+    }
 
     #endregion
 
