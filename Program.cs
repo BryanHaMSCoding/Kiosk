@@ -307,15 +307,22 @@ namespace KioskFinalProject {
             } while (cashbackResponse != "y" && cashbackResponse != "n"); //end while
             
             if (cashbackResponse == "y") {
-                cashbackAmount = decimal.Parse(Prompt("Enter cashback amount: "));
-                if (!currency.DispenseChange(cashbackAmount)) {
-                    Console.WriteLine("Insufficient funds available in Kiosk to dispense cashback");
-                    cashbackAmount = 0;
-                } else {
-                    amount += cashbackAmount;
-
-                }//end if
-                
+                cashbackAmount = 0;
+                bool validCashbackAmount = false;
+                while (!validCashbackAmount) {
+                    string cashbackInput = (Prompt("Enter cashback amount: "));
+                    if (decimal.TryParse(cashbackInput, out cashbackAmount) && cashbackAmount > 0) { 
+                        if (!currency.DispenseChange(cashbackAmount)) {
+                            Console.WriteLine("Insufficient funds available in Kiosk to dispense cashback");
+                            cashbackAmount = 0;
+                        } else {
+                            amount += cashbackAmount;
+                            validCashbackAmount = true;
+                        }//end if
+                    }else {
+                        Console.WriteLine("invalid input. Please enter a positive cashback amount. ");
+                    }//end if
+                }//end while
             }//end if
             string[] transactionResult = MoneyRequest(cardNumber, amount);
             if (transactionResult[0] == "declined") {
@@ -349,8 +356,9 @@ namespace KioskFinalProject {
             //50% CHANCE TRANSACTION PASSES OR FAILS
             bool pass = rnd.Next(100) < 50;
             //50% CHANCE THAT A FAILED TRANSACTION IS DECLINED
-            bool declined = rnd.Next(100) < 50;
-
+            //bool declined = rnd.Next(100) < 50;
+            bool declined = rnd.Next(100) < 0;
+            
             if (pass) {
                 return new string[] { account_number, amount.ToString() };
             } else {
